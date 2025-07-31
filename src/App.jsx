@@ -19,6 +19,7 @@ import { scrollToTopInstant } from "./utils/scrollToTop"; // Assuming this path 
 import { SearchProvider } from "./context/SearchContext"; // Assuming this path is correct
 import MainAuth from "./components/Authentication/MainAuth"; // Path to your MainAuth component
 import Settings from "./components/Authentication/Setting"; // Path to your Settings component
+import NotFound from "./pages/NotFound";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -92,6 +93,7 @@ const AppContent = () => {
           {/* MainAuth handles rendering Login/Signup based on URL query params */}
           <Route path="/auth" element={<MainAuth />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       {!isAuthRoute && <Footer />}
