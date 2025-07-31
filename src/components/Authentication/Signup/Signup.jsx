@@ -18,7 +18,8 @@ const Signup = ({ setScreen }) => {
     city: "",
   });
 
-  const [alerts, setAlerts] = useState([]); // For error/success messages
+  const [alerts, setAlerts] = useState([]);
+  const [agreed, setAgreed] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -29,28 +30,38 @@ const Signup = ({ setScreen }) => {
     if (password.length < 6) {
       errors.push("Password must be at least 6 characters long.");
     }
-
-    // Count alphabets and numbers
     const alphaCount = (password.match(/[A-Za-z]/g) || []).length;
     const numberCount = (password.match(/[0-9]/g) || []).length;
-
     if (alphaCount < 4) {
       errors.push("Password must contain at least 4 alphabetic letters.");
     }
     if (numberCount < 2) {
       errors.push("Password must contain at least 2 numbers.");
     }
-
     return errors;
+  };
+
+  const isFormComplete = () => {
+    return (
+      formData.username.trim() &&
+      formData.email.trim() &&
+      formData.phone.trim() &&
+      formData.password.trim() &&
+      formData.street.trim() &&
+      formData.city.trim() &&
+      agreed
+    );
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
-    // Clear previous alerts
     setAlerts([]);
-
-    // Validate username length
+    if (!agreed) {
+      setAlerts([
+        { type: "error", message: "You must agree to Terms & Policy." },
+      ]);
+      return;
+    }
     if (formData.username.trim().length < 3) {
       setAlerts([
         {
@@ -60,8 +71,6 @@ const Signup = ({ setScreen }) => {
       ]);
       return;
     }
-
-    // Validate phone number: 10 digits and starts with 9
     if (!/^9\d{9}$/.test(formData.phone)) {
       setAlerts([
         {
@@ -71,14 +80,11 @@ const Signup = ({ setScreen }) => {
       ]);
       return;
     }
-
-    // Validate password
     const passwordErrors = validatePassword(formData.password);
     if (passwordErrors.length > 0) {
       setAlerts(passwordErrors.map((msg) => ({ type: "error", message: msg })));
       return;
     }
-
     try {
       const res = await fetch("http://localhost:3000/user/signup", {
         method: "POST",
@@ -92,14 +98,12 @@ const Signup = ({ setScreen }) => {
           city: formData.city,
         }),
       });
-
       const data = await res.json();
-
       if (res.ok) {
         setAlerts([
           { type: "success", message: "Signup successful! Please login." },
         ]);
-        setTimeout(() => setScreen(false), 1500); // Switch to login screen after 1.5s
+        setTimeout(() => setScreen(false), 1500);
       } else {
         setAlerts([
           { type: "error", message: data.message || "Signup failed" },
@@ -114,9 +118,9 @@ const Signup = ({ setScreen }) => {
   };
 
   const inputClass =
-    "w-full pl-10 pr-3 py-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm";
+    "w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm transition duration-200 ease-in-out";
 
-  const iconClass = "w-5 h-5 absolute left-3 top-2.5 text-gray-500 z-10";
+  const iconClass = "w-5 h-5 absolute left-3 top-2.5 text-gray-400";
 
   const renderInput = (icon, type, name, placeholder) => (
     <div className="relative">
@@ -135,7 +139,7 @@ const Signup = ({ setScreen }) => {
   );
 
   return (
-    <form onSubmit={handleSignup} className="space-y-4">
+    <form onSubmit={handleSignup} className="space-y-5">
       {renderInput(
         <UserIcon className={iconClass} />,
         "text",
@@ -173,8 +177,29 @@ const Signup = ({ setScreen }) => {
         "City"
       )}
 
-      {/* Alerts display above button */}
-      <div className="min-h-[1.5rem]">
+      <div className="flex items-start space-x-2">
+        <input
+          type="checkbox"
+          id="terms"
+          checked={agreed}
+          onChange={() => setAgreed(!agreed)}
+          className="w-4 h-4 mt-1 cursor-pointer text-orange-500 border-gray-300 rounded focus:ring-orange-400"
+        />
+        <label htmlFor="terms" className="text-sm select-none text-gray-700">
+          I agree to the{" "}
+          <a
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-orange-500 underline hover:text-orange-600"
+          >
+            Terms and Conditions
+          </a>
+          , Privacy Policy, and all related policies.
+        </label>
+      </div>
+
+      <div className="min-h-4">
         {alerts.map((alert, index) => (
           <p
             key={index}
@@ -193,7 +218,11 @@ const Signup = ({ setScreen }) => {
 
       <button
         type="submit"
-        className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition"
+        className={`w-full py-2 rounded-md text-white transition cursor-pointer duration-200 ${
+          isFormComplete()
+            ? "bg-orange-500 hover:bg-orange-600 cursor-pointer"
+            : "bg-orange-400 cursor-default"
+        }`}
       >
         Sign Up
       </button>

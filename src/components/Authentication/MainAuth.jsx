@@ -19,7 +19,7 @@ const MainAuth = () => {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-white px-4 -mt-20">
+      <div className="min-h-screen flex items-center justify-center bg-white px-4 mt-5">
         <div className="w-full max-w-md bg-white border border-black rounded-2xl shadow-xl p-6">
           <div className="flex flex-col items-center mb-4">
             <img src="logo.png" alt="Logo" className="h-20 w-20" />

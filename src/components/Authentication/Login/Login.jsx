@@ -39,7 +39,7 @@ const Login = ({ setScreen }) => {
   return (
     <form
       onSubmit={handleLogin}
-      className="bg-white p-6 rounded shadow-md space-y-5 w-full max-w-sm mx-auto"
+      className="bg-white p-6 rounded space-y-5 w-full max-w-sm mx-auto"
     >
       <h2 className="text-2xl font-bold text-center text-orange-600">Login</h2>
 
@@ -78,16 +78,6 @@ const Login = ({ setScreen }) => {
       >
         Login
       </button>
-      <p className="text-center text-gray-600 text-sm mt-3">
-        Don't have an account?{" "}
-        <button
-          type="button"
-          onClick={() => setScreen("signup")}
-          className="text-orange-600 hover:underline font-medium"
-        >
-          Sign Up
-        </button>
-      </p>
     </form>
   );
 };
